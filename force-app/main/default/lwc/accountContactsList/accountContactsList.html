@@ -1,0 +1,120 @@
+<template>
+    <lightning-card title="Contactos" icon-name="standard:contact">
+        <!-- Botón para crear un nuevo contacto con Screen Flow -->
+        <div slot="actions">
+            <lightning-button 
+                label="Nuevo Contacto" 
+                variant="brand" 
+                icon-name="utility:add" 
+                onclick={handleOpenFlowModal}>
+            </lightning-button>
+        </div>
+
+        <div class="slds-var-p-around_medium">
+            <div class="slds-var-m-bottom_medium">
+                <lightning-input 
+                    type="search" 
+                    label="Buscar contactos"
+                    variant="label-hidden"
+                    placeholder="Buscar contactos..."
+                    value={searchKey} 
+                    onchange={handleSearchChange}>
+                </lightning-input>
+            </div>
+
+            <!-- Spinner de carga -->
+            <template if:true={isLoading}>
+                <div class="slds-align_absolute-center slds-var-p-around_large">
+                    <lightning-spinner alternative-text="Cargando contactos..." size="medium"></lightning-spinner>
+                </div>
+            </template>
+
+            <!-- Tabla de datos personalizada (datatable) -->
+            <template if:true={hasContacts}>
+                <lightning-datatable
+                    key-field="Id"
+                    data={contacts}
+                    columns={columns}
+                    sorted-by={sortedBy}
+                    sorted-direction={sortedDirection}
+                    onsort={handleSort}
+                    onrowaction={handleRowAction}
+                    hide-checkbox-column>
+                </lightning-datatable>
+            </template>
+
+            <!-- Mensaje si no hay registros -->
+            <template if:false={hasContacts}>
+                <template if:false={isLoading}>
+                    <div class="slds-text-align_center slds-text-color_weak slds-var-p-around_medium">
+                        No se encontraron contactos asociados a esta cuenta.
+                    </div>
+                </template>
+            </template>
+        </div>
+    </lightning-card>
+
+    <!-- Modal para editar el contacto -->
+    <template if:true={isEditModalOpen}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning-button-icon
+                        icon-name="utility:close"
+                        alternative-text="Cerrar"
+                        onclick={closeEditModal}
+                        class="slds-modal__close">
+                    </lightning-button-icon>
+                    <h2 class="slds-modal__title slds-hyphenate">Editar Contacto</h2>
+                </header>
+
+                <!-- Contenido del modal con el formulario de edición -->
+                <div class="slds-modal__content slds-p-around_medium">
+                    <lightning-record-edit-form
+                        object-api-name="Contact"
+                        record-id={editContactId}
+                        onsuccess={handleEditSuccess}
+                        onerror={handleEditError}>
+                        <lightning-messages></lightning-messages>
+                        <lightning-input-field field-name="Name"></lightning-input-field>
+                        <lightning-input-field field-name="Email"></lightning-input-field>
+                        <lightning-input-field field-name="Phone"></lightning-input-field>
+                        <lightning-input-field field-name="Title"></lightning-input-field>
+
+                        <div class="slds-m-top_medium slds-text-align_right">
+                            <lightning-button label="Cancelar" variant="neutral" onclick={closeEditModal}></lightning-button>
+                            <lightning-button class="slds-m-left_x-small" label="Guardar" type="submit" variant="brand"></lightning-button>
+                        </div>
+                    </lightning-record-edit-form>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <!-- Modal para ejecutar el Screen Flow para crear un nuevo contacto -->
+    <template if:true={isFlowModalOpen}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning-button-icon 
+                        icon-name="utility:close" 
+                        onclick={handleCloseFlowModal} 
+                        alternative-text="Cerrar" 
+                        class="slds-modal__close">
+                    </lightning-button-icon>
+                    <h2 class="slds-modal__title slds-hyphenate">Crear Nuevo Contacto</h2>
+                </header>
+                <div class="slds-modal__content slds-var-p-around_medium">
+                    <!-- Componente estándar para insertar el Screen Flow -->
+                    <lightning-flow 
+                        flow-api-name="Crear_Contacto_Asociado_Cuenta" 
+                        flow-input-variables={flowInputVariables} 
+                        onstatuschange={handleFlowStatusChange}>
+                    </lightning-flow>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>
