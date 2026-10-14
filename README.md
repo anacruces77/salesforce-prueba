@@ -65,3 +65,9 @@ El proyecto está desplegado en un entorno de desarrollo de Salesforce para faci
 Las credenciales de acceso se facilitan por correo electrónico junto con el enlace al repositorio.
 
 Para probar el componente, accede a una cuenta de Salesforce y comprueba las funcionalidades de consulta, búsqueda, ordenación, edición, creación y eliminación de contactos.
+
+
+## Autora
+
+- **Nombre:** Ana Cruces López.
+- **Tecnologías:** Salesforce, Lightning Web Components (LWC), Apex y Screen Flow.
